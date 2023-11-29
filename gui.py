@@ -64,7 +64,7 @@ label=Label(top,background='#CDCDCD', font=('arial',15,'bold'))
 sign_image = Label(top)
 
 def classify(file_path):
-    global label_packed
+    
     image = Image.open(file_path)
     image = image.resize((30,30))
     image = numpy.expand_dims(image, axis=0)

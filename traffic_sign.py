@@ -15,7 +15,7 @@ labels = []
 classes = 43
 cur_path = os.getcwd()
 
-#Retrieving the images and their labels 
+#Prendo le immagini e le label 
 for i in range(classes):
     path = os.path.join(cur_path,'train',str(i))
     images = os.listdir(path)
@@ -25,27 +25,27 @@ for i in range(classes):
             image = Image.open(path + '\\'+ a)
             image = image.resize((30,30))
             image = np.array(image)
-            #sim = Image.fromarray(image)
             data.append(image)
             labels.append(i)
         except:
-            print("Error loading image")
+            print("Errore nel caricamento delle immagini")
 
-#Converting lists into numpy arrays
+#Converto le liste in array numpy
 data = np.array(data)
 labels = np.array(labels)
 
 print(data.shape, labels.shape)
-#Splitting training and testing dataset
+
+#Splitto in training e test set
 X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-#Converting the labels into one hot encoding
+#Converto le label in one hot encoding
 y_train = to_categorical(y_train, 43)
 y_test = to_categorical(y_test, 43)
 
-#Building the model
+#Costruisco il modello
 model = Sequential()
 model.add(Conv2D(filters=32, kernel_size=(5,5), activation='relu', input_shape=X_train.shape[1:]))
 model.add(Conv2D(filters=32, kernel_size=(5,5), activation='relu'))
@@ -60,14 +60,14 @@ model.add(Dense(256, activation='relu'))
 model.add(Dropout(rate=0.5))
 model.add(Dense(43, activation='softmax'))
 
-#Compilation of the model
+#Compilo il modello
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 epochs = 15
 history = model.fit(X_train, y_train, batch_size=32, epochs=epochs, validation_data=(X_test, y_test))
 model.save("traffic_classifier.h5")
 
-#plotting graphs for accuracy 
+#plot dei grafici per l'accuracy 
 plt.figure(0)
 plt.plot(history.history['accuracy'], label='training accuracy')
 plt.plot(history.history['val_accuracy'], label='val accuracy')
@@ -77,6 +77,7 @@ plt.ylabel('accuracy')
 plt.legend()
 plt.show()
 
+#Plot dei grafici per la loss
 plt.figure(1)
 plt.plot(history.history['loss'], label='training loss')
 plt.plot(history.history['val_loss'], label='val loss')
@@ -86,7 +87,7 @@ plt.ylabel('loss')
 plt.legend()
 plt.show()
 
-#testing accuracy on test dataset
+#test accuracy nel test set
 from sklearn.metrics import accuracy_score
 
 y_test = pd.read_csv('Test.csv')
@@ -106,5 +107,5 @@ X_test=np.array(data)
 pred = model.predict_classes(X_test)
 
 #Accuracy with the test data
-from sklearn.metrics import accuracy_score
+
 print(accuracy_score(labels, pred))
